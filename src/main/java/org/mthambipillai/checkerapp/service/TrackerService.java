@@ -22,7 +22,7 @@ public class TrackerService {
     private final Map<String, Integer> progressions = new HashMap<>();
 
     public Map<String, Integer> getProgressions() {
-        List<String> onlineIps = List.of("0.0.0.0"); // networkScanService.getParticipantsFromSubnet(applicationProperties.getSubnet(), EXPECTED_PORT);
+        List<String> onlineIps = networkScanService.getParticipantsFromSubnet(applicationProperties.getSubnet(), EXPECTED_PORT);
         for  (String ip : onlineIps) {
             int score = playwrightService.runTests(ip, EXPECTED_PORT);
             if (!progressions.containsKey(ip)) {

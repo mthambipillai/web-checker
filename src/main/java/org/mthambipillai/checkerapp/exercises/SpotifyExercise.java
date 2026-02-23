@@ -76,24 +76,35 @@ public class SpotifyExercise extends Exercise {
     }
 
     private Optional<Page> getArtistPage(Page mainPage, String artistId) {
-        Locator loc = mainPage.locator(String.format("a[href*='%s']",  artistId));
-        if (loc != null) {
-            String link = loc.getAttribute("href");
-            if (link != null && link.contains(artistId)) {
-                return Optional.ofNullable(gotoPage(context, joinUrl(mainPage.url(), link)));
+        try {
+            Locator loc = mainPage.locator(String.format("a[href*='%s']",  artistId));
+            if (loc != null && loc.count() == 1) {
+                String link = loc.getAttribute("href");
+                if (link != null && link.contains(artistId)) {
+                    return Optional.ofNullable(gotoPage(context, joinUrl(mainPage.url(), link)));
+                }
             }
+
+        } catch (Exception e) {
+            return Optional.empty();
         }
         return Optional.empty();
     }
 
     private Optional<Page> getSongPage(Page artistPage, String songId) {
-        Locator loc = artistPage.locator(String.format("a[href*='%s']",  songId));
-        if (loc != null) {
-            String link = loc.getAttribute("href");
-            if (link != null && link.contains(songId)) {
-                return Optional.ofNullable(gotoPage(context, joinUrl(artistPage.url(), link)));
+        try {
+            Locator loc = artistPage.locator(String.format("a[href*='%s']",  songId));
+            if (loc != null && loc.count() == 1) {
+                String link = loc.getAttribute("href");
+                if (link != null && link.contains(songId)) {
+                    return Optional.ofNullable(gotoPage(context, joinUrl(artistPage.url(), link)));
+                }
             }
+
+        } catch (Exception e) {
+            return Optional.empty();
         }
+
         return Optional.empty();
     }
 
