@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Progression de l'exercice</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <h1>Progression de l'exercice</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Adresse IP</th>
+            <th th:each="task, i : ${tasks}"
+                th:text="'Etape ' + ${i.count}">
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="progress : ${progressions}">
+            <td th:text="${progress.key}"></td>
+            <td th:each="task, i : ${tasks}"
+                th:class="${progress.value >= i.count} ? 'done' : 'todo'"
+                th:text="${progress.value >= i.count} ? 'Réussi!' : ''">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <h3>Description des étapes</h3>
+    <ul>
+        <li th:each="task, iter : ${tasks}"
+            th:text="'Etape ' + ${iter.count} + ' : ' + ${task}">
+        </li>
+    </ul>
+    <script>
+        setInterval(function() {
+            location.reload();
+        }, 60000);
+    </script>
+</body>
+</html>
+

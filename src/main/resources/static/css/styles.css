@@ -1,0 +1,35 @@
+body {
+    background-color: #1a1a1a;
+    color: #00ff99;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    text-align: center;
+    margin: 20px;
+    padding: 0;
+}
+
+h3, ul, li {
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 12px;
+    text-align: center;
+    color: #000000;
+    background-color: #eee;
+}
+
+.done {
+    background-color: lightgreen;
+}
+
+.todo {
+    background-color: lightcoral;
+}
