@@ -37,13 +37,13 @@ public class PlaywrightService {
         String url = "http://" + ip + ":" + port;
         System.out.println("Navigating to " + url + "...");
         int total = 0;
-        Page page = gotoPage(context, url);
-        if (page != null) {
+        Optional<Page> page = gotoPage(context, url);
+        if (page.isPresent()) {
             System.out.println("Starting tests on " + url + "...");
             Exercise exercise = exercises.get(applicationProperties.getExerciseName());
-            GroupTest allTests = exercise.getTests(page);
+            GroupTest allTests = exercise.getTests(page.get());
             total = allTests.isSuccessful().getScore();
-            page.close();
+            page.get().close();
             System.out.println("Finished tests on " + url + ".");
         }
         return total;

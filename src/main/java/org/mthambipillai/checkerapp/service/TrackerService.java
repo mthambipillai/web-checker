@@ -21,9 +21,18 @@ public class TrackerService {
 
     private final Map<String, Integer> progressions = new HashMap<>();
 
+    private List<String> getOnlineIps() {
+        if (applicationProperties.isDevMode()) {
+            return List.of("0.0.0.0");
+        } else if (!applicationProperties.getIpList().isEmpty()) {
+            return networkScanService.getParticipantsFromList(applicationProperties.getIpList(), EXPECTED_PORT);
+        } else {
+            return networkScanService.getParticipantsFromSubnet(applicationProperties.getSubnet(), EXPECTED_PORT);
+        }
+    }
+
     public Map<String, Integer> getProgressions() {
-        List<String> onlineIps = networkScanService.getParticipantsFromSubnet(applicationProperties.getSubnet(), EXPECTED_PORT);
-        for  (String ip : onlineIps) {
+        for (String ip : getOnlineIps()) {
             int score = playwrightService.runTests(ip, EXPECTED_PORT);
             if (!progressions.containsKey(ip)) {
                 progressions.put(ip, score);

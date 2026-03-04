@@ -57,11 +57,7 @@ public class SpotifyExercise extends Exercise {
                 return false;
             }
             String newLink = firstLink.replace("5wD0owYApRtYmjPWavWKvb", "UNARTISTEQUINEXISTEPAS");
-            Page page = context.newPage();
-            Response response = page.navigate(joinUrl(mainPage.url(), newLink));
-            int status = response.status();
-            page.close();
-            return status == 404;
+            return hasExpectedStatus(context, joinUrl(mainPage.url(), newLink), 404);
         } catch (Exception e) {
             return false;
         }
@@ -69,43 +65,10 @@ public class SpotifyExercise extends Exercise {
 
     private List<Page> getArtistPages(Page mainPage) {
         return Stream.of(
-                getArtistPage(mainPage, "3oDbviiivRWhXwIE8hxkVV"),
-                getArtistPage(mainPage, "5wD0owYApRtYmjPWavWKvb"),
-                getArtistPage(mainPage, "2xrB9HuIJ8XYHFpgNPg1wy")
+                gotoPageIfLinkContains(context, mainPage, "3oDbviiivRWhXwIE8hxkVV"),
+                gotoPageIfLinkContains(context, mainPage, "5wD0owYApRtYmjPWavWKvb"),
+                gotoPageIfLinkContains(context, mainPage, "2xrB9HuIJ8XYHFpgNPg1wy")
         ).filter(Optional::isPresent).map(Optional::get).toList();
-    }
-
-    private Optional<Page> getArtistPage(Page mainPage, String artistId) {
-        try {
-            Locator loc = mainPage.locator(String.format("a[href*='%s']",  artistId));
-            if (loc != null && loc.count() == 1) {
-                String link = loc.getAttribute("href");
-                if (link != null && link.contains(artistId)) {
-                    return Optional.ofNullable(gotoPage(context, joinUrl(mainPage.url(), link)));
-                }
-            }
-
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-        return Optional.empty();
-    }
-
-    private Optional<Page> getSongPage(Page artistPage, String songId) {
-        try {
-            Locator loc = artistPage.locator(String.format("a[href*='%s']",  songId));
-            if (loc != null && loc.count() == 1) {
-                String link = loc.getAttribute("href");
-                if (link != null && link.contains(songId)) {
-                    return Optional.ofNullable(gotoPage(context, joinUrl(artistPage.url(), link)));
-                }
-            }
-
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-
-        return Optional.empty();
     }
 
     private boolean hasAllLinks(Page page, int nbExpectedLinks) {
@@ -115,6 +78,14 @@ public class SpotifyExercise extends Exercise {
     private boolean hasSomeKnownArtists(Page page) {
         String text = page.locator("body").innerText();
         return text.contains("Loyle Carner") && text.contains("DJ Shah") && text.contains("The Beach Boys");
+        /**return page.evaluate("""
+        () => {
+          const text = document.body.textContent;
+          return text.includes("string1") &&
+                 text.includes("string2") &&
+                 text.includes("string3");
+        }
+        """); 
     }
 
     private GroupTest testMainPage(Page page) {
@@ -167,8 +138,8 @@ public class SpotifyExercise extends Exercise {
     }
 
     private GroupTest testSongPage(Page homePage) {
-        Optional<Page> artistPage = getArtistPage(homePage, "3oDbviiivRWhXwIE8hxkVV");
-        Optional<Page> songPage = artistPage.flatMap(p -> getSongPage(p, "1wEHSOXRBj1wa5O7WXU3B8"));
+        Optional<Page> artistPage = gotoPageIfLinkContains(context, homePage, "3oDbviiivRWhXwIE8hxkVV");
+        Optional<Page> songPage = artistPage.flatMap(p -> gotoPageIfLinkContains(context, p, "1wEHSOXRBj1wa5O7WXU3B8"));
 
         return new GroupTest("Song Page", List.of(
                 new SingleTest("song page contains lyrics", () -> songPage.isPresent() &&
